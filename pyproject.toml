@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "my-cloud"
+version = "0.1.0"
+description = ""
+authors = ["Arthur Alves <arthuralves2p@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = { extras = ["standard"], version = "^0.115.8" }
+tortoise-orm = { extras = ["psycopg"], version = "^0.24.0" }
+aerich = { extras = ["toml"], version = "^0.8.1" }
+asyncpg = "^0.30.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.9.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+select = ["ALL"]
+ignore = ["I", "D100", "D101", "D103", "D104"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+#TODO: add mypy
