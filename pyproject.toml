@@ -11,10 +11,15 @@ fastapi = { extras = ["standard"], version = "^0.115.8" }
 tortoise-orm = { extras = ["psycopg"], version = "^0.24.0" }
 aerich = { extras = ["toml"], version = "^0.8.1" }
 asyncpg = "^0.30.0"
+itsdangerous = "^2.2.0"
+authlib = "^1.4.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+requests = "^2.32.3"
 
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.5"
+mypy = "^1.15.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -29,4 +34,14 @@ ignore = ["I", "D100", "D101", "D103", "D104"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
-#TODO: add mypy
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
