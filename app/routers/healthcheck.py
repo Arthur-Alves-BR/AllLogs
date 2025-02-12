@@ -1,18 +1,13 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends
-
-from app.core.jwt import get_current_user
-
+from typing_extensions import TypedDict
+from fastapi import APIRouter
 
 router = APIRouter()
 
 
+class HealthCheckResponse(TypedDict):
+    status: str
+
+
 @router.get("/health_check")
-async def health_check() -> dict[str, str]:
+async def health_check() -> HealthCheckResponse:
     return {"status": "Ok"}
-
-
-@router.get("/chat")
-async def get_response(current_user: Annotated[dict, Depends(get_current_user)]) -> dict[str, str]:
-    return {"message": "Welcome!", "user": current_user}

@@ -1,15 +1,12 @@
-import os
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
-from starlette.middleware.sessions import SessionMiddleware
 
-from .routers import healthcheck, auth
+from .routers import healthcheck
+
 
 app = FastAPI()
 
-app.include_router(auth.router)
 app.include_router(healthcheck.router)
 
 app.add_middleware(
@@ -20,7 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "default_secret_key"))
 
 
 register_tortoise(

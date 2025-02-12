@@ -11,10 +11,7 @@ fastapi = { extras = ["standard"], version = "^0.115.8" }
 tortoise-orm = { extras = ["psycopg"], version = "^0.24.0" }
 aerich = { extras = ["toml"], version = "^0.8.1" }
 asyncpg = "^0.30.0"
-itsdangerous = "^2.2.0"
-authlib = "^1.4.1"
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-requests = "^2.32.3"
+uvicorn = {extras = ["standard"], version = "^0.34.0"}
 
 
 [tool.poetry.group.dev.dependencies]
