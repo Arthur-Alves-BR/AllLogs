@@ -21,7 +21,7 @@ app.add_middleware(
 
 register_tortoise(
     app,
-    db_url="postgres://postgres:password@localhost/cloud",
+    db_url="postgres://postgres:password@localhost/app",
     modules={"models": ["app.models.user"]},
     generate_schemas=True,
     add_exception_handlers=True,
