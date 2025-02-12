@@ -1,13 +1,27 @@
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from tortoise.contrib.fastapi import register_tortoise
 
-from .routers import healthcheck
+from app.routers import healthcheck, company, user
+from app.core.database.settings import tortoise_orm
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):  # noqa: ANN201, ARG001
+    await tortoise_orm.init_orm()
+    yield
+    await tortoise_orm.close_orm()
 
-app.include_router(healthcheck.router)
+
+app = FastAPI(lifespan=lifespan)
+
+main_router = APIRouter(prefix="/api")
+main_router.include_router(healthcheck.router)
+main_router.include_router(company.router)
+main_router.include_router(user.router)
+
+app.include_router(main_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,13 +30,4 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
-)
-
-
-register_tortoise(
-    app,
-    db_url="postgres://postgres:password@localhost/app",
-    modules={"models": ["app.models.user"]},
-    generate_schemas=True,
-    add_exception_handlers=True,
 )
