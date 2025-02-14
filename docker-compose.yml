@@ -27,12 +27,23 @@ services:
     networks:
       - db-net
 
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      - db-net
+
 networks:
-  minio-net:
-    driver: bridge
   db-net:
     driver: bridge
 
 volumes:
-  minio-data:
   postgres-data:
+  mongo-data:

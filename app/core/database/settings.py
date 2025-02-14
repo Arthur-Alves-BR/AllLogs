@@ -1,3 +1,4 @@
+from motor.motor_asyncio import AsyncIOMotorClient
 from tortoise.contrib.fastapi import RegisterTortoise
 
 
@@ -12,3 +13,5 @@ TORTOISE_ORM = {
 }
 
 tortoise_orm = RegisterTortoise(config=TORTOISE_ORM)
+
+mongo_client = AsyncIOMotorClient("mongodb://mongo:password@127.0.0.1:27017")

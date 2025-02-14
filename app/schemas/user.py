@@ -21,5 +21,5 @@ class CreateUser(BaseModel):
 
 
 class UpdateUser(BaseModel):
-    name: str | None = Field(min_length=1, default=None)
+    name: str | None = Field(None, min_length=1)
     email: EmailStr | None = None

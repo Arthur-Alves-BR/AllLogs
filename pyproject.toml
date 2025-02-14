@@ -12,6 +12,7 @@ asyncpg = "^0.30.0"
 pytest = "^8.3.4"
 pytest-asyncio = "^0.25.3"
 httpx = "^0.28.1"
+beanie = "^1.29.0"
 
 [tool.poetry.dependencies.fastapi]
 extras = ["standard"]
@@ -47,6 +48,7 @@ ignore = [
     "D106",
     "D107",
     "D401",
+    "RUF012",
     "S101",
 ]
 
@@ -67,6 +69,10 @@ warn_unreachable = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "session"
+asyncio_mode = "auto"
 
 [tool.aerich]
 tortoise_orm = "app.main.TORTOISE_ORM"
