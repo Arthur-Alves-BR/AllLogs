@@ -4,7 +4,7 @@ from typing import Any, TypeVar, Generic
 
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
-from tortoise.exceptions import DoesNotExist
+from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from fastapi import HTTPException, status
 
@@ -40,7 +40,10 @@ class BaseService(Generic[T]):
 
     async def create(self, data: dict) -> T:
         """Create a new record using the provided data."""
-        return await self.model.create(**data)
+        try:
+            return await self.model.create(**data)
+        except IntegrityError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e.__context__.args[0])) from e
 
     async def update(self, id: UUID4, data: dict) -> T:
         """Update an existing record by its id with the provided data."""

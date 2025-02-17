@@ -12,12 +12,12 @@ async def get_company(id: UUID4) -> GetCompany:
     return await company_service.get_by_id(id)
 
 
-@router.get("/")
+@router.get("")
 async def get_companies() -> list[GetCompany]:
     return await company_service.get_all()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_company(company: CreateCompany) -> GetCompany:
     return await company_service.create(company.model_dump())
 

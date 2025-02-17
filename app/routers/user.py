@@ -12,19 +12,19 @@ async def get_user(id: UUID4) -> GetUser:
     return await user_service.get_by_id(id)
 
 
-@router.get("/")
+@router.get("")
 async def get_users() -> list[GetUser]:
     return await user_service.get_all()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(company: CreateUser) -> GetUser:
-    return await user_service.create(company.model_dump())
+@router.post("", status_code=status.HTTP_201_CREATED)
+async def create_user(user: CreateUser) -> GetUser:
+    return await user_service.create(user.model_dump())
 
 
 @router.put("/{id}")
-async def update_user(id: UUID4, company: UpdateUser) -> GetUser:
-    return await user_service.update(id, company.model_dump(exclude_unset=True))
+async def update_user(id: UUID4, user: UpdateUser) -> GetUser:
+    return await user_service.update(id, user.model_dump(exclude_unset=True))
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)

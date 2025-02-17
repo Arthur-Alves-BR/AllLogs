@@ -1,6 +1,9 @@
+from typing import Annotated
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, UUID4, Field
+from pydantic import AfterValidator, BaseModel, EmailStr, UUID4, Field
+
+from app.core.auth.password import is_valid_password
 
 
 class GetUser(BaseModel):
@@ -15,7 +18,7 @@ class GetUser(BaseModel):
 
 class CreateUser(BaseModel):
     name: str = Field(min_length=1)
-    password: str
+    password: Annotated[str, AfterValidator(is_valid_password)]
     email: EmailStr
     company_id: UUID4
 
