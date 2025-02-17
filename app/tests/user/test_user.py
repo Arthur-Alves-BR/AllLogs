@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import status
 
-from app.models.user import User
+from app.models import User
 
 
 base_endpoint = "/users"
@@ -36,8 +36,29 @@ async def test_create_user_with_invalid_company_id(api_client):
     data = {
         "name": "New User 2",
         "password": "Ag$234gsrgh",
-        "email": "test2@gmail.com",
+        "email": "test@gmail.com",
         "company_id": str(uuid.uuid4()),
     }
     response = await api_client.post(base_endpoint, json=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+async def test_update_user(api_client, test_user):
+    update_data = {"name": "Updated User Name"}
+    response = await api_client.put(f"{base_endpoint}/{test_user.id}", json=update_data)
+    assert response.status_code == status.HTTP_200_OK
+
+    response_data = response.json()
+
+    assert response_data["id"] == str(test_user.id)
+    assert response_data["name"] == update_data["name"]
+
+
+async def test_delete_user(api_client, test_user):
+    response = await api_client.delete(f"{base_endpoint}/{test_user.id}")
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    await test_user.refresh_from_db()
+
+    assert not test_user.is_active
+    assert test_user.deleted_at

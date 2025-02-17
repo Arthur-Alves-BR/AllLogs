@@ -77,7 +77,7 @@ asyncio_default_fixture_loop_scope = "session"
 asyncio_mode = "auto"
 
 [tool.aerich]
-tortoise_orm = "app.main.TORTOISE_ORM"
+tortoise_orm = "app.core.database.settings.TORTOISE_ORM"
 location = "./app/core/database/migrations"
 src_folder = "./."
 

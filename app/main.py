@@ -5,7 +5,7 @@ from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.models.log import Log
-from app.routers import healthcheck, company, user, log
+from app.routers import healthcheck, application, company, user, log
 from app.core.database.settings import tortoise_orm, mongo_client
 
 
@@ -21,6 +21,7 @@ app = FastAPI(lifespan=lifespan)
 
 main_router = APIRouter(prefix="/api")
 main_router.include_router(healthcheck.router)
+main_router.include_router(application.router)
 main_router.include_router(company.router)
 main_router.include_router(user.router)
 main_router.include_router(log.router)

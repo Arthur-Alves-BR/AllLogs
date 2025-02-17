@@ -6,7 +6,7 @@ TORTOISE_ORM = {
     "connections": {"default": "postgres://postgres:password@localhost/app"},
     "apps": {
         "models": {
-            "models": ["aerich.models", "app.models.user", "app.models.company"],
+            "models": ["aerich.models", "app.models"],
             "default_connection": "default",
         },
     },

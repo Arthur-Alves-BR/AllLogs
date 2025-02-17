@@ -9,9 +9,8 @@ from beanie import init_beanie
 
 from app.main import app
 from app.models.log import Log
-from app.models.user import User
 from app.core.enums import LogLevel
-from app.models.company import Company
+from app.models import Application, Company, User
 from app.core.database.settings import TORTOISE_ORM, mongo_client
 
 
@@ -24,7 +23,7 @@ def pytest_collection_modifyitems(items):
 
 
 # Init test databases
-@pytest_asyncio.fixture(scope="session", autouse=True)
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def init_dbs():
     test_db_models = copy.copy(TORTOISE_ORM["apps"]["models"])
     del test_db_models["default_connection"]
@@ -48,16 +47,21 @@ async def api_client():
         yield client
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def test_company():
     return await Company.create(name="Test Company")
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def test_user(test_company):
     return await User.create(name="Test User", email="123@gmail.com", password="1234", company=test_company)  # noqa: S106
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="function", autouse=True)
+async def test_application(test_company):
+    return await Application.create(name="Test Application", description="A test app", company=test_company)
+
+
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def test_log():
     return await Log(level=LogLevel.DEBUG, message="Test log", source=uuid.uuid4(), metadata={}).create()

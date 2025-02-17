@@ -1,6 +1,6 @@
 from fastapi import status
 
-from app.models.company import Company
+from app.models import Company
 
 
 base_endpoint = "/companies"
