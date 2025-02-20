@@ -4,7 +4,7 @@ from typing import Any, TypeVar, Generic
 
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
-from tortoise.exceptions import DoesNotExist, IntegrityError
+from tortoise.exceptions import IntegrityError
 
 from fastapi import HTTPException, status
 
@@ -32,11 +32,9 @@ class BaseService(Generic[T]):
 
         Raises a 404 HTTP exception if the record is not found.
         """
-        try:
-            instance = await self._base_query.get(id=id)
-        except DoesNotExist as e:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.model.__name__} not found") from e
-        return instance
+        if instance := await self._base_query.get_or_none(id=id):
+            return instance
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.model.__name__} not found")
 
     async def create(self, data: dict) -> T:
         """Create a new record using the provided data."""

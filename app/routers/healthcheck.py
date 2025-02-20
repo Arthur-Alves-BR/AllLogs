@@ -1,7 +1,7 @@
 from typing_extensions import TypedDict
 from fastapi import APIRouter
 
-router = APIRouter()
+router = APIRouter(tags=["healthcheck"])
 
 
 class HealthCheckResponse(TypedDict):

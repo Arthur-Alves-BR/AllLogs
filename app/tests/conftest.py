@@ -9,8 +9,10 @@ from beanie import init_beanie
 
 from app.main import app
 from app.models.log import Log
-from app.core.enums import LogLevel
 from app.models import Application, Company, User
+
+from app.core.enums import LogLevel
+from app.core.auth.user import create_user_token
 from app.core.database.settings import TORTOISE_ORM, mongo_client
 
 
@@ -41,12 +43,6 @@ async def init_dbs():
     await mongo_client.drop_database(nosql_db_name)
 
 
-@pytest_asyncio.fixture
-async def api_client():
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test/api") as client:
-        yield client
-
-
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def test_company():
     return await Company.create(name="Test Company")
@@ -65,3 +61,14 @@ async def test_application(test_company):
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def test_log():
     return await Log(level=LogLevel.DEBUG, message="Test log", source=uuid.uuid4(), metadata={}).create()
+
+
+@pytest_asyncio.fixture
+async def api_client(test_user):
+    test_token = create_user_token(test_user)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test/api",
+        headers={"Authorization": f"Bearer {test_token.access_token}"},
+    ) as client:
+        yield client
