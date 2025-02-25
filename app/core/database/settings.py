@@ -1,9 +1,11 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from tortoise.contrib.fastapi import RegisterTortoise
 
+from app.core.settings import config
+
 
 TORTOISE_ORM = {
-    "connections": {"default": "postgres://postgres:password@localhost/app"},
+    "connections": {"default": config.postgres_url},
     "apps": {
         "models": {
             "models": ["aerich.models", "app.models"],
@@ -14,4 +16,4 @@ TORTOISE_ORM = {
 
 tortoise_orm = RegisterTortoise(config=TORTOISE_ORM)
 
-mongo_client = AsyncIOMotorClient("mongodb://mongo:password@127.0.0.1:27017")
+mongo_client = AsyncIOMotorClient(config.mongo_url)
