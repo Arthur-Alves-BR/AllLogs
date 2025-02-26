@@ -1,11 +1,13 @@
 from beanie import init_beanie
 from contextlib import asynccontextmanager
 
+from fastapi.security import HTTPBearer
 from fastapi import Depends, FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.models.log import Log
-from app.core.auth.user import get_current_user
+from app.core.auth.middleware import UserMiddleware
+from app.core.auth.user import get_current_user_from_request
 from app.core.database.settings import tortoise_orm, mongo_client
 from app.routers import healthcheck, application, company, user, log, auth
 
@@ -20,19 +22,7 @@ async def lifespan(app: FastAPI):  # noqa: ANN201, ARG001
 
 app = FastAPI(lifespan=lifespan)
 
-open_router = APIRouter(prefix="/api")
-open_router.include_router(auth.router)
-open_router.include_router(healthcheck.router)
-
-closed_router = APIRouter(prefix="/api", dependencies=[Depends(get_current_user)])
-closed_router.include_router(application.router)
-closed_router.include_router(company.router)
-closed_router.include_router(user.router)
-closed_router.include_router(log.router)
-
-app.include_router(open_router)
-app.include_router(closed_router)
-
+app.add_middleware(UserMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -41,3 +31,22 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+open_router = APIRouter(prefix="/api")
+open_router.include_router(auth.router)
+open_router.include_router(healthcheck.router)
+
+closed_router = APIRouter(
+    prefix="/api",
+    dependencies=[
+        Depends(get_current_user_from_request),
+        Depends(HTTPBearer()),  # Used to display Authorize button in docs page
+    ],
+)
+closed_router.include_router(application.router)
+closed_router.include_router(company.router)
+closed_router.include_router(user.router)
+closed_router.include_router(log.router)
+
+app.include_router(open_router)
+app.include_router(closed_router)

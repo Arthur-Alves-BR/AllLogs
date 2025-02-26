@@ -1,15 +1,12 @@
 from datetime import timedelta
 
-from fastapi import HTTPException, Security, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import HTTPException, status
 
 from app.models.user import User
 from app.core.settings import config
+from app.core.request import AppRequest
 from app.core.auth.jwt import create_token, decode_token
 from app.schemas.auth import Token, TokenUser, RefreshTokenUser
-
-
-auth_scheme = Security(HTTPBearer())
 
 
 def create_user_token(user: User) -> Token:
@@ -30,8 +27,14 @@ def create_user_token(user: User) -> Token:
     )
 
 
-def get_current_user(http_auth_credentials: HTTPAuthorizationCredentials = auth_scheme) -> TokenUser:
+def get_current_user(authorization_token: str) -> TokenUser | None:
     try:
-        return TokenUser(**decode_token(http_auth_credentials.credentials))
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token") from e
+        return TokenUser(**decode_token(authorization_token))
+    except HTTPException:
+        return None
+
+
+def get_current_user_from_request(request: AppRequest) -> TokenUser:
+    if user := request.user:
+        return user
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthenticated")

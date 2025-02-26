@@ -1,18 +1,17 @@
 from pydantic import UUID4
-from typing import Annotated
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
 from app.services import user_service
 from app.schemas.auth import TokenUser
-from app.core.auth.user import get_current_user
+from app.core.request import AppRequest
 from app.schemas.user import GetUser, CreateUser, UpdateUser
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/me")
-async def get_me(user: Annotated[TokenUser, Depends(get_current_user)]) -> TokenUser:
-    return user
+async def get_me(request: AppRequest) -> TokenUser:
+    return request.user
 
 
 @router.get("/{id}")

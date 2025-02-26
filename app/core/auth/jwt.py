@@ -1,6 +1,7 @@
 import jwt
 
 from datetime import timedelta
+
 from fastapi import HTTPException, status
 
 from app.core.settings import config

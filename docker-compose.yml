@@ -40,12 +40,6 @@ services:
     networks:
       - db-net
 
-  api:
-    build: .
-    container_name: api
-    networks:
-      - db-net
-
 networks:
   db-net:
     driver: bridge
