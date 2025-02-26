@@ -1,3 +1,4 @@
+from abc import ABC
 from pydantic import UUID4
 from datetime import datetime, UTC
 from typing import Any, TypeVar, Generic
@@ -8,20 +9,24 @@ from tortoise.exceptions import IntegrityError
 
 from fastapi import HTTPException, status
 
+from app.core.request import AppRequest
+
 
 T = TypeVar("T", bound=Model)
 
 
-class BaseService(Generic[T]):
-    def __init__(self, model: type[T], default_filters: dict[str, Any] | None = None) -> None:
-        """Initializes the service with the model and optional default filters."""
-        self.model = model
-        self._default_filters = default_filters if default_filters else {}
+class BaseService(ABC, Generic[T]):
+    model: type[T]
+    default_filters: dict[str, Any] = {}
+
+    def __init__(self, request: AppRequest) -> None:
+        """Initializes the service with the incoming request."""
+        self._request = request
 
     @property
     def _base_query(self) -> QuerySet[T]:
         """Returns the base query with default filters applied."""
-        return self.model.filter(**self._default_filters)
+        return self.model.filter(**self.default_filters)
 
     async def get_all(self) -> list[T]:
         """Retrieve all records of the model."""

@@ -1,32 +1,35 @@
 from pydantic import UUID4
-from fastapi import APIRouter, status
+from typing import Annotated
+from fastapi import APIRouter, Depends, status
 
-from app.services import application_service
+from app.services.application import ApplicationService
 from app.schemas.application import GetApplication, CreateApplication, UpdateApplication
+
+Service = Annotated[ApplicationService, Depends()]
 
 router = APIRouter(prefix="/applications", tags=["applications"])
 
 
 @router.get("/{id}")
-async def get_application(id: UUID4) -> GetApplication:
-    return await application_service.get_by_id(id)
+async def get_application(id: UUID4, service: Service) -> GetApplication:
+    return await service.get_by_id(id)
 
 
 @router.get("")
-async def get_applications() -> list[GetApplication]:
-    return await application_service.get_all()
+async def get_applications(service: Service) -> list[GetApplication]:
+    return await service.get_all()
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_application(user: CreateApplication) -> GetApplication:
-    return await application_service.create(user.model_dump())
+async def create_application(user: CreateApplication, service: Service) -> GetApplication:
+    return await service.create(user.model_dump())
 
 
 @router.put("/{id}")
-async def update_application(id: UUID4, user: UpdateApplication) -> GetApplication:
-    return await application_service.update(id, user.model_dump(exclude_unset=True))
+async def update_application(id: UUID4, user: UpdateApplication, service: Service) -> GetApplication:
+    return await service.update(id, user.model_dump(exclude_unset=True))
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_application(id: UUID4) -> None:
-    return await application_service.soft_delete(id)
+async def delete_application(id: UUID4, service: Service) -> None:
+    return await service.soft_delete(id)
