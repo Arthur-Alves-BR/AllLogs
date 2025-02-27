@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
 from app.models.user import User
 from app.core.auth.jwt import decode_token
@@ -13,10 +11,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/token")
-async def token(login_data: Annotated[LoginData, Depends()]) -> Token:
+async def token(login_data: LoginData) -> Token:
     user = await User.get_or_none(email=login_data.email)
     if not user or not verify_password(plain_password=login_data.password, hashed_password=user.password):
-        return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
     return create_user_token(user)
 
 
